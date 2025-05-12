@@ -1,0 +1,35 @@
+<div class="container mt-5">
+  <h1>Избранное</h1>
+  {{#if user}}
+    {{#if favorites}}
+      <div class="row">
+        {{#each favorites}}
+          <div class="col-md-4 mb-4">
+            <a href="/hobby/{{id}}" style="text-decoration: none; color: inherit;">
+              <div class="card" style="cursor: pointer;">
+                {{#if images.[0]}}
+                  <img src="{{images.[0]}}" class="card-img-top" alt="{{name}}" style="height: 200px; object-fit: cover;">
+                {{else}}
+                  <img src="/images/placeholder.jpg" class="card-img-top" alt="Нет изображения" style="height: 200px; object-fit: cover;">
+                {{/if}}
+                <div class="card-body">
+                  <h5 class="card-title">{{name}}</h5>
+                  <p class="card-text">{{truncate description 100}}</p>
+                </div>
+              </div>
+            </a>
+            <div class="mt-2 text-center">
+              <form action="/favorites/remove/{{id}}" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Удалить из избранного?')">Удалить</button>
+              </form>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <p>У вас нет избранных хобби.</p>
+    {{/if}}
+  {{else}}
+    <p>Пожалуйста, <a href="/login">войдите</a>, чтобы видеть избранное.</p>
+  {{/if}}
+</div>

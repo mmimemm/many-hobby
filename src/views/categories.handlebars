@@ -1,0 +1,8 @@
+<div class="container my-4">
+  <h2 class="text-center my-4">Категории</h2>
+  <div class="d-flex justify-content-around flex-wrap">
+    {{#each categories}}
+      <a href="/categories/{{id}}" class="card text-decoration-none">{{name}}</a>
+    {{/each}}
+  </div>
+</div>

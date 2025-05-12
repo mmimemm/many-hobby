@@ -1,0 +1,27 @@
+{{#if suggestions}}
+  <div class="mt-4">
+    <h4>Предложения пользователей</h4>
+    {{#each suggestions}}
+      <div class="card mb-3">
+        <div class="card-body">
+          <p><strong>Хобби:</strong> {{hobby_name}}</p>
+          <p>{{description}}</p>
+          <small class="text-muted">{{formatDate created_at}}</small>
+          {{#if status}}
+            <span class="badge bg-secondary">{{status}}</span>
+          {{/if}}
+          {{#if ../user.is_admin}}
+            <form action="/admin/suggestion/{{id}}/accept" method="POST" style="display: inline;">
+              <button type="submit" class="btn btn-success btn-sm mt-2">Принять</button>
+            </form>
+            <form action="/admin/suggestion/{{id}}/reject" method="POST" style="display: inline;">
+              <button type="submit" class="btn btn-danger btn-sm mt-2">Отклонить</button>
+            </form>
+          {{/if}}
+        </div>
+      </div>
+    {{/each}}
+  </div>
+{{else}}
+  <p class="mt-4">Предложений пока нет.</p>
+{{/if}}

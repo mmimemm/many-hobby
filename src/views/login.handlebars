@@ -1,0 +1,56 @@
+<div class="container mt-5">
+  <h1>Вход и регистрация</h1>
+  {{#if successMessage}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{successMessage}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {{/if}}
+  {{#if errorMessage}}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{errorMessage}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {{/if}}
+  <div class="row">
+    <!-- Форма входа -->
+    <div class="col-md-6">
+      <h3>Вход</h3>
+      <form action="/login" method="POST" class="needs-validation" novalidate>
+        <div class="mb-3">
+          <label for="username" class="form-label">Имя пользователя</label>
+          <input type="text" id="username" name="username" class="form-control" required>
+          <div class="invalid-feedback">Введите имя пользователя.</div>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Пароль</label>
+          <input type="password" id="password" name="password" class="form-control" required>
+          <div class="invalid-feedback">Введите пароль.</div>
+        </div>
+        <button type="submit" class="btn btn-primary">Войти</button>
+      </form>
+    </div>
+    <!-- Форма регистрации -->
+    <div class="col-md-6">
+      <h3>Регистрация</h3>
+      <form action="/register" method="POST" class="needs-validation" novalidate>
+        <div class="mb-3">
+          <label for="reg-username" class="form-label">Имя пользователя</label>
+          <input type="text" id="reg-username" name="username" class="form-control" required>
+          <div class="invalid-feedback">Введите имя пользователя.</div>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" id="email" name="email" class="form-control" required>
+          <div class="invalid-feedback">Введите корректный email.</div>
+        </div>
+        <div class="mb-3">
+          <label for="reg-password" class="form-label">Пароль</label>
+          <input type="password" id="reg-password" name="password" class="form-control" required>
+          <div class="invalid-feedback">Введите пароль.</div>
+        </div>
+        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+      </form>
+    </div>
+  </div>
+</div>

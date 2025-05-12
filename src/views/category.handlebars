@@ -1,0 +1,45 @@
+<div class="container mt-5">
+  <h1>{{category.name}}</h1>
+  {{#if hobbies}}
+    <div class="row">
+      {{#each hobbies}}
+        <div class="col-md-4 mb-3">
+          <div class="card hobby-card">
+            {{#if images.[0]}}
+              <img src="{{images.[0]}}" class="card-img-top hobby-image" alt="{{name}}" onerror="this.src='/images/default.jpg';">
+            {{else}}
+              <img src="/images/default.jpg" class="card-img-top hobby-image" alt="Нет изображения">
+            {{/if}}
+            <div class="card-body">
+              <h5 class="card-title"><a href="/hobby/{{id}}" style="color: #fff; text-decoration: none;">{{name}}</a></h5>
+              <p class="card-text">{{truncate description 50}}</p>
+              <div class="d-flex justify-content-center gap-2">
+                <a href="/hobby/{{id}}" class="btn btn-primary btn-sm">Подробнее</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+    <!-- Пагинация -->
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center">
+        {{#if (gt totalHobbies perPage)}}
+          {{#if (gt currentPage 1)}}
+            <li class="page-item"><a class="page-link" href="/categories/{{category.id}}?page={{subtract currentPage 1}}">Предыдущая</a></li>
+          {{/if}}
+          {{#each (array totalPages)}}
+            <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+              <a class="page-link" href="/categories/{{../category.id}}?page={{this}}">{{this}}</a>
+            </li>
+          {{/each}}
+          {{#if (lt currentPage totalPages)}}
+            <li class="page-item"><a class="page-link" href="/categories/{{category.id}}?page={{add currentPage 1}}">Следующая</a></li>
+          {{/if}}
+        {{/if}}
+      </ul>
+    </nav>
+  {{else}}
+    <p>Хобби в этой категории отсутствуют.</p>
+  {{/if}}
+</div>

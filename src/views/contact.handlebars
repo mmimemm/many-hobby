@@ -1,0 +1,32 @@
+<div class="container mt-5">
+  <h1>Обратная связь</h1>
+  {{#if successMessage}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{successMessage}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {{/if}}
+  {{#if errorMessage}}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{errorMessage}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {{/if}}
+  {{#if user}}
+    <form action="/contact/suggest" method="POST" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label for="hobby_name" class="form-label">Название хобби</label>
+        <input type="text" id="hobby_name" name="hobby_name" class="form-control" required>
+        <div class="invalid-feedback">Введите название хобби.</div>
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Описание</label>
+        <textarea id="description" name="description" class="form-control" rows="4" required></textarea>
+        <div class="invalid-feedback">Введите описание.</div>
+      </div>
+      <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
+  {{else}}
+    <p>Пожалуйста, <a href="#" data-bs-toggle="modal" data-bs-target="#authModal">войдите</a>, чтобы отправить предложение.</p>
+  {{/if}}
+</div>

@@ -1,0 +1,71 @@
+<div class="container mt-5">
+  <h1>{{hobby.name}}</h1>
+  <p><strong>Категория:</strong> {{hobby.category_name}}</p>
+  <p>{{hobby.description}}</p>
+  {{#if hobby.images}}
+    <div class="row">
+      {{#each hobby.images}}
+        <div class="col-md-4 mb-3">
+          <img src="{{this}}" alt="{{../hobby.name}}" class="img-fluid" onerror="this.src='/images/placeholder.jpg';">
+        </div>
+      {{/each}}
+    </div>
+  {{/if}}
+
+  <!-- Кнопка "Добавить в избранное" -->
+  {{#if user}}
+    <div class="mt-3">
+      <form action="/favorites/add/{{hobby.id}}" method="POST" style="display: inline;">
+        <button type="submit" class="btn btn-outline-primary btn-sm">
+          {{#if isFavorite}}Добавлено в избранное{{else}}Добавить в избранное{{/if}}
+        </button>
+      </form>
+    </div>
+  {{/if}}
+
+  <h3 class="mt-5">Комментарии</h3>
+  {{#if user}}
+    <form action="/hobby/{{hobby.id}}/comment" method="POST">
+      <div class="mb-3">
+        <label for="commentContent" class="form-label">Добавить комментарий</label>
+        <textarea class="form-control" id="commentContent" name="content" rows="3" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
+  {{else}}
+    <p>Пожалуйста, <a href="#" data-bs-toggle="modal" data-bs-target="#authModal">войдите</a>, чтобы оставить комментарий.</p>
+  {{/if}}
+
+  {{#if comments}}
+    <div class="mt-4">
+      {{#each comments}}
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-2">
+              <img src="{{avatar}}" alt="Аватар {{username}}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.src='/images/avatars/default.jpg';">
+              <div>
+                <strong>{{username}}</strong>
+                <br>
+                <small class="text-muted">{{formatDate created_at}}</small>
+              </div>
+            </div>
+            <p class="mt-2">{{content}}</p>
+            {{#if (eq user_id ../user.id)}}
+              <form action="/comment/delete/{{id}}" method="POST" style="display: inline;">
+                <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+              </form>
+            {{else}}
+              {{#if ../user.is_admin}}
+                <form action="/comment/delete/{{id}}" method="POST" style="display: inline;">
+                  <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                </form>
+              {{/if}}
+            {{/if}}
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <p class="mt-4">Комментариев пока нет.</p>
+  {{/if}}
+</div>

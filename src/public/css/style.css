@@ -1,0 +1,829 @@
+/* Общие стили */
+body {
+    font-family: 'Days One', sans-serif;
+    background: #fff;
+    color: #6a0dad;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Шапка, закрепленная при прокрутке */
+.header-fixed {
+    position: sticky;
+    top: 0;
+    background: #fff5f7;
+    padding: 15px 30px;
+    border-radius: 0 0 30px 30px;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 1000;
+    /* Удаляем position: relative, чтобы не перезаписывать position: sticky */
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Секция 1: Логотип слева */
+.nav-logo-section {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.nav-logo {
+    font-family: 'Jaro', sans-serif;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ff69b4;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.nav-logo:hover {
+    color: #6a0dad;
+}
+
+/* Секция 2: Меню по центру */
+.nav-menu-container {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+    position: relative;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    justify-content: center;
+    background: #fff5f7;
+    padding: 10px 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1001;
+}
+
+.nav-menu a {
+    color: #6a0dad;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+.nav-menu a:hover {
+    color: #ff69b4;
+}
+
+.hamburger {
+    font-family: 'Days One', sans-serif;
+    display: none;
+    font-size: 2rem;
+    background: none;
+    border: none;
+    color: #6a0dad;
+    cursor: pointer;
+    z-index: 1002;
+    margin-left: 10px;
+}
+
+/* Секция 3: Кнопки справа */
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.nav-buttons a {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.favorite-btn,
+.profile-btn {
+    font-size: 1.8rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ff69b4;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.favorite-btn:hover,
+.profile-btn:hover {
+    background-color: #6a0dad;
+    transform: scale(1.1);
+}
+
+.favorite-btn i,
+.profile-btn i {
+    vertical-align: middle;
+}
+/* Стили для кнопки входа */
+.login-button {
+    position: absolute;
+    
+    right: 30px; /* Увеличенный отступ от правого края */
+    z-index: 1003; /* Над меню и кнопками */
+    padding: 5px 15px; /* Улучшенные внутренние отступы */
+}
+
+.login-button .btn {
+    background-color: #6a0dad;
+    border: none;
+    padding: 8px 20px; /* Увеличенный размер кнопки */
+    border-radius: 20px; /* Скругление углов */
+    font-size: 1rem;
+    color: #fff;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.login-button .btn:hover {
+    background-color: #ff69b4;
+    transform: scale(1.05); /* Лёгкое увеличение при наведении */
+}
+
+/* Стили для выпадающего меню */
+.dropdown-menu {
+    background: #fff5f7;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 10px rgba(106, 13, 173, 0.1);
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ff69b4 #fff5f7;
+    background-color:rgba(252, 189, 220, 0.8); /* Убираем фон для акцента на сдвиге */
+}
+
+.dropdown-menu::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+    background: #fff5f7;
+    border-radius: 10px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+    background: #ff69b4;
+    border-radius: 10px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: #6a0dad;
+}
+
+.dropdown-item {
+    color: #6a0dad;
+    padding: 8px 15px;
+    transition: transform 0.5s ease, color 0.1s ease;
+    background-color: transparent; /* Убираем фон по умолчанию */
+    position: relative; /* Для управления сдвигом */
+}
+
+.dropdown-item:hover {
+    color: #fff;
+    transform: translateX(15px); /* Увеличиваем сдвиг вправо */
+}
+
+@media (min-width: 992px) {
+    .dropdown-item:hover {
+        color: #fff;
+        background-color: transparent !important; /* Убеждаемся, что фон отсутствует */
+    }
+}
+
+@media (max-width: 991.98px) {
+    .dropdown-item:hover {
+        color: #fff;
+        background-color: transparent !important;
+    }
+}
+/* Стили для главного изображения на главной странице */
+.home-hero {
+    background: #ff69b4;
+    border-radius: 30px;
+    margin: 30px 0;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: auto; /* Адаптируем высоту под содержимое */
+    padding: 0;
+}
+
+.home-hero img {
+    object-fit: contain; /* Сохраняем пропорции изображения */
+    width: 100%;
+    height: auto; /* Высота подстраивается под изображение */
+    max-width: 100%; /* Ограничиваем ширину */
+    max-height: 600px; /* Увеличиваем максимальную высоту для больших изображений */
+    border-radius: 30px;
+    display: block; /* Убираем лишние пробелы под изображением */
+}
+
+/* Адаптивность для меньших экранов */
+@media (max-width: 1200px) {
+    .home-hero {
+        margin: 20px 0;
+    }
+    .home-hero img {
+        max-height: 500px;
+    }
+}
+
+@media (max-width: 992px) {
+    .home-hero img {
+        max-height: 400px;
+    }
+}
+
+@media (max-width: 576px) {
+    .home-hero {
+        margin: 15px 0;
+    }
+    .home-hero img {
+        max-height: 300px;
+    }
+}
+
+/* Стили для карточек */
+.card {
+    font-family: 'Days One', sans-serif;
+    background: #ff69b4;
+    border-radius: 20px;
+    width: 100%;
+    height: 220px;
+    margin: 15px 0;
+    transition: transform 0.3s ease;
+    color: #fff;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.card img {
+    width: 100%;
+    height: 70%;
+    object-fit: cover;
+    border-radius: 20px 20px 0 0;
+}
+
+.card a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.2rem;
+    padding: 10px;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+/* Переопределение стилей для карточек хобби в личном кабинете */
+.profile-section {
+    width: 100%;
+    padding: 20px;
+    background: #fff5f7;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.hobby-card {
+    height: 350px;
+    overflow: hidden;
+}
+
+.hobby-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 20px 20px 0 0;
+}
+
+.card-body {
+    padding: 10px;
+}
+
+.card-body .btn {
+    margin-top: 5px;
+    background-color: #6a0dad;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.card-body .btn:hover {
+    background-color: #ff69b4;
+}
+
+/* Стили для карточек категорий */
+.category-card {
+    height: 300px;
+    background: #ff69b4;
+    border-radius: 20px;
+    width: 100%;
+    margin: 15px 0;
+    transition: transform 0.3s ease;
+    color: #fff;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.category-card:hover {
+    transform: scale(1.05);
+}
+
+.category-card a {
+    color: #fff;
+    text-decoration: none;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Стили для комментариев */
+.comment-card {
+    background: #fff5f7;
+    color: #6a0dad;
+    padding: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: 1px solid #eee;
+    border-radius: 15px;
+    transition: transform 0.2s ease;
+}
+
+.comment-card:hover {
+    transform: translateY(-2px);
+}
+
+.comment-card .card-body {
+    padding: 0;
+    display: flex;
+    align-items: flex-start;
+}
+
+.comment-card img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 2px solid #ff69b4;
+}
+
+.comment-card .d-flex.align-items-center {
+    margin-bottom: 5px;
+}
+
+.comment-card strong {
+    font-size: 1rem;
+    color: #6a0dad;
+}
+
+.comment-card .text-muted {
+    font-size: 0.8rem;
+    color: #888;
+    margin-left: 10px;
+}
+
+.comment-card .card-text {
+    color: #6a0dad;
+    font-size: 0.9rem;
+    margin: 5px 0 0;
+    line-height: 1.4;
+}
+
+.comment-card .btn-sm {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    margin-top: 5px;
+}
+
+/* Стили для кастомной карусели */
+.custom-carousel {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.carousel-wrapper {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-slide {
+    flex: 0 0 100%;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 105, 180, 0.8);
+    border-radius: 15px;
+}
+
+.carousel-slide a {
+    color: #fff;
+    text-decoration: none;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-slide h3 {
+    color: #fff;
+    font-size: 2rem;
+    text-align: center;
+    margin: 0;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.carousel-btn:hover {
+    color: #ff69b4;
+}
+
+.carousel-prev {
+    left: 10px;
+}
+
+.carousel-next {
+    right: 10px;
+}
+
+/* Стили для заголовков и текста на главной странице */
+.main-heading {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #6a0dad;
+    font-size: 2rem;
+}
+
+/* Стили для пагинции */
+.pagination {
+    margin-top: 20px;
+}
+
+.pagination .page-item .page-link {
+    color: #6a0dad;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #ff69b4;
+    color: #fff;
+    border-color: #ff69b4;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #6a0dad;
+    color: #fff;
+    border-color: #6a0dad;
+}
+
+/* Отступ перед подвалом */
+.footer-spacer {
+    height: 50px;
+}
+
+/* Подвал */
+footer {
+    font-family: 'Days One', sans-serif;
+    background: #ff69b4;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: auto;
+    border-radius: 20px 20px 0 0;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+footer a {
+    color: #fff5f7;
+    text-decoration: underline;
+}
+
+footer a:hover {
+    color: #fff;
+}
+
+/* Стили для вкладок в личном кабинете */
+.nav-tabs {
+    border-bottom: 1px solid #dee2e6;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    background: transparent;
+    margin-top: 10px;
+}
+
+.nav-tabs .nav-item {
+    flex: 1;
+    text-align: center;
+}
+
+.nav-tabs .nav-link {
+    background: transparent;
+    color: #6a0dad;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    width: 100%;
+    padding: 10px;
+    font-size: 1.1rem;
+    transition: color 0.3s ease, border-bottom-color 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #ff69b4;
+    border-bottom: 2px solid #ff69b4;
+}
+
+.nav-tabs .nav-link.active {
+    background: transparent;
+    color: #ff69b4;
+    border-bottom: 2px solid #ff69b4;
+}
+
+/* Стили для таблиц в админ-панели */
+.table {
+    background: #fff5f7;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background: #ff69b4;
+    color: #fff;
+    font-weight: bold;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background: #ffe6f0;
+}
+
+.table .btn {
+    margin: 2px;
+}
+
+/* Стили для форм в админ-панели */
+.form-control {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #ff69b4;
+    box-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
+}
+
+.btn-primary {
+    background-color: #6a0dad;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #ff69b4;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.invalid-feedback {
+    font-size: 0.8rem;
+    color: #dc3545;
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .hobby-card {
+        height: 300px;
+    }
+    .hobby-image {
+        height: 150px;
+    }
+    .home-hero {
+        margin: 20px 0;
+    }
+    .category-card {
+        height: 250px;
+    }
+}
+
+@media (max-width: 992px) {
+    .navbar {
+        padding: 0 10px;
+        flex-direction: row;
+        align-items: center;
+    }
+    .nav-logo-section {
+        margin-right: auto;
+    }
+    .hamburger {
+        display: block;
+        margin-left: 15px;
+    }
+    .nav-menu {
+        display: none;
+        width: 100%;
+    }
+    .nav-menu.show {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 80px;
+        left: 0;
+        right: 0;
+        background: #ff69b4;
+        width: 100%;
+        padding: 15px;
+        border-radius: 0 0 20px 20px;
+        z-index: 1001;
+    }
+    .nav-menu.show a {
+        margin: 10px 0;
+        font-size: 1.2rem;
+        color: #fff;
+    }
+    .dropdown-menu {
+        position: static;
+        width: 100%;
+        left: 0;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 10px 20px;
+        display: none;
+        max-height: 300px;
+        overflow-y: auto;
+        background: #ff69b4;
+    }
+    .nav-menu.show .dropdown-menu.show {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .dropdown-item {
+        color: #fff;
+    }
+    .dropdown-item:hover {
+        color: #fff5f7;
+    }
+    .nav-buttons {
+        display: none;
+    }
+    .nav-menu.show .nav-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .favorite-btn,
+    .profile-btn {
+        font-size: 1.5rem;
+        width: 35px;
+        height: 35px;
+    }
+    .profile-section {
+        padding: 15px;
+    }
+    .nav-tabs {
+        flex-direction: column;
+    }
+    .nav-tabs .nav-item {
+        width: 100%;
+    }
+    .nav-tabs .nav-link {
+        padding: 8px;
+    }
+    .category-card {
+        height: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .nav-logo {
+        font-size: 1.5rem;
+    }
+    .hamburger {
+        font-size: 1.5rem;
+    }
+    .nav-menu.show {
+        top: 60px;
+    }
+    .hobby-card {
+        height: 250px;
+    }
+    .hobby-image {
+        height: 120px;
+    }
+    .home-hero {
+        margin: 15px 0;
+    }
+    .favorite-btn,
+    .profile-btn {
+        font-size: 1.3rem;
+        width: 30px;
+        height: 30px;
+    }
+    .nav-menu.show a {
+        font-size: 1rem;
+    }
+    .nav-tabs .nav-link {
+        font-size: 0.9rem;
+        padding: 6px;
+    }
+    .profile-section {
+        padding: 10px;
+    }
+    .table {
+        font-size: 0.9rem;
+    }
+    .btn-sm {
+        font-size: 0.6rem;
+        padding: 1px 4px;
+    }
+    .form-control {
+        font-size: 0.9rem;
+    }
+    .category-card {
+        height: 180px;
+    }
+}
+
+/* Корректировка для больших экранов */
+@media (min-width: 992px) {
+    .header-fixed {
+        padding: 20px 40px;
+    }
+    .nav-menu {
+        padding: 12px 25px;
+    }
+    .nav-menu a {
+        font-size: 1.3rem;
+    }
+    .dropdown-menu {
+        min-width: 200px;
+    }
+}
