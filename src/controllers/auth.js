@@ -46,7 +46,8 @@ exports.postRegister = async (req, res) => {
       return res.redirect('/login');
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    await pool.query('INSERT INTO users (username, email, password, is_admin, avatar) VALUES (?, ?, ?, 0, ?)', [username, email, hashedPassword, '/images/avatars/default.jpg']);
+    await pool.query('INSERT INTO users (username, email, password, is_admin, avatar) VALUES (?, ?, ?, 0, ?)',
+   [username, email, hashedPassword, '/images/avatars/default.jpg']);
     req.session.successMessage = 'Регистрация прошла успешно! Войдите, чтобы продолжить.';
     res.redirect('/login');
   } catch (err) {
