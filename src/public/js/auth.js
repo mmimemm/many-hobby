@@ -1,13 +1,12 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // Удаляем обработчики fetch, так как сервер работает с редиректами
-  const forms = document.querySelectorAll('.needs-validation');
-  forms.forEach(form => {
-    form.addEventListener('submit', event => {
-      if (!form.checkValidity()) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-      form.classList.add('was-validated');
-    }, false);
-  });
+const express = require('express');
+const router = express.Router();
+const authController = require('../controllers/auth');
+
+router.get('/login', authController.getLogin);
+router.post('/login', authController.postLogin);
+router.post('/register', authController.postRegister);
+router.get('/logout', (req, res) => {
+  req.session.destroy(() => res.redirect('/'));
 });
+
+module.exports = router;

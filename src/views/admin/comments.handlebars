@@ -1,0 +1,19 @@
+{{#if comments}}
+  <div class="mt-4">
+    <h4>Комментарии пользователей</h4>
+    {{#each comments}}
+      <div class="card mb-3">
+        <div class="card-body d-flex align-items-start">
+          <img src="{{avatar}}" alt="Аватар" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.src='/images/avatars/default.jpg';">
+          <div>
+            <p><strong>{{email}}</strong> о хобби <strong>{{hobby_name}}</strong></p>
+            <p>{{text}}</p>
+            <small class="text-muted">{{formatDate created_at}}</small>
+          </div>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+{{else}}
+  <p class="mt-4">Комментариев пока нет.</p>
+{{/if}}

@@ -11,25 +11,49 @@ router.get('/profile', async (req, res) => {
     const [hobbies] = await pool.query(
       'SELECT hobbies.*, categories.name as category_name FROM hobbies JOIN categories ON hobbies.category_id = categories.id'
     );
-    let commentsQuery = 'SELECT comments.*, hobbies.name as hobby_name FROM comments JOIN hobbies ON comments.hobby_id = hobbies.id';
-    const queryParams = [];
+    let commentsQuery = 'SELECT comments.*, hobbies.name as hobby_name, users.avatar, users.email FROM comments JOIN hobbies ON comments.hobby_id = hobbies.id JOIN users ON comments.user_id = users.id';
+    const commentParams = [];
     if (!req.session.user.is_admin) {
       commentsQuery += ' WHERE comments.user_id = ?';
-      queryParams.push(req.session.user.id);
+      commentParams.push(req.session.user.id);
     }
-    const [comments] = await pool.query(commentsQuery, queryParams);
-    const [suggestions] = await pool.query(
-      'SELECT * FROM hobby_suggestions WHERE user_id = ?',
-      [req.session.user.id]
-    );
-    const [categories] = await pool.query('SELECT * FROM categories'); // Добавляем запрос категорий
+    const [comments] = await pool.query(commentsQuery, commentParams);
+
+    let suggestionsQuery = 'SELECT hobby_suggestions.*, categories.name as category_name FROM hobby_suggestions LEFT JOIN categories ON hobby_suggestions.category_id = categories.id';
+    const suggestionParams = [];
+    if (!req.session.user.is_admin) {
+      suggestionsQuery += ' WHERE hobby_suggestions.user_id = ?';
+      suggestionParams.push(req.session.user.id);
+    }
+    const [suggestions] = await pool.query(suggestionsQuery, suggestionParams);
+    const suggestionsWithHex = suggestions.map(s => ({
+      ...s,
+      status_hex: Buffer.from(s.status).toString('hex')
+    }));
+    console.log('Suggestions fetched for profile:', JSON.stringify(suggestionsWithHex.map(s => ({
+      id: s.id,
+      hobby_name: s.hobby_name,
+      category_name: s.category_name,
+      status: s.status,
+      status_hex: s.status_hex
+    })), null, 2));
+    console.log('User data:', JSON.stringify(req.session.user, null, 2));
+    console.log('Rendering profile template with data:', {
+      user: req.session.user.email,
+      suggestionsCount: suggestions.length,
+      isAdmin: req.session.user.is_admin,
+      suggestionsExist: suggestions.length > 0,
+      suggestionsSample: suggestionsWithHex.slice(0, 1)
+    });
+
+    const [categories] = await pool.query('SELECT * FROM categories');
     const userWithAvatar = { ...req.session.user, avatar: req.session.user.avatar || '/images/avatars/default.jpg' };
     res.render('profile', {
       user: userWithAvatar,
       hobbies: hobbies.map(hobby => ({
         ...hobby,
         images: Array.isArray(hobby.images) ? hobby.images : (
-          typeof hobby.images === 'string' && hobby.images.trim() ? (() => {
+          typeof hobby.images === 'string' && hobby_images.trim() ? (() => {
             try {
               return JSON.parse(hobby.images);
             } catch (e) {
@@ -39,8 +63,8 @@ router.get('/profile', async (req, res) => {
         )
       })),
       comments,
-      suggestions,
-      categories, // Передаём категории в шаблон
+      suggestions: suggestionsWithHex,
+      categories,
       title: 'Личный кабинет'
     });
   } catch (err) {
@@ -50,6 +74,7 @@ router.get('/profile', async (req, res) => {
   }
 });
 
+// Остальные маршруты без изменений
 router.post('/profile/update', async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   const { email, password } = req.body;
@@ -81,8 +106,6 @@ router.post('/profile/update', async (req, res) => {
     await pool.query(updateQuery, updateParams);
 
     req.session.user = { ...req.session.user, email, avatar: avatarPath };
-    if (password) req.session.user.password = hashedPassword; // Обновляем сессию
-
     req.session.successMessage = 'Профиль успешно обновлён';
     res.redirect('/profile');
   } catch (err) {
@@ -95,6 +118,7 @@ router.post('/profile/update', async (req, res) => {
 router.post('/admin/suggestion/:id/accept', async (req, res) => {
   if (!req.session.user || !req.session.user.is_admin) return res.redirect('/login');
   const suggestionId = req.params.id;
+  const { category_id } = req.body;
   try {
     const [suggestion] = await pool.query('SELECT * FROM hobby_suggestions WHERE id = ?', [suggestionId]);
     if (suggestion.length === 0) {
@@ -102,13 +126,14 @@ router.post('/admin/suggestion/:id/accept', async (req, res) => {
       return res.redirect('/profile');
     }
     const { hobby_name, description } = suggestion[0];
-    await pool.query('INSERT INTO hobbies (name, description, category_id) VALUES (?, ?, ?)', [hobby_name, description, 1]);
+    const selectedCategoryId = category_id || suggestion[0].category_id || 1;
+    await pool.query('INSERT INTO hobbies (name, description, category_id, images, links, created_at) VALUES (?, ?, ?, ?, ?, NOW())', [hobby_name, description, selectedCategoryId, '[]', '{}']);
     await pool.query('UPDATE hobby_suggestions SET status = ? WHERE id = ?', ['accepted', suggestionId]);
-    req.session.successMessage = 'Предложение принято';
+    req.session.successMessage = 'Предложение одобрено';
     res.redirect('/profile');
   } catch (err) {
     console.error('Error in /admin/suggestion/:id/accept:', err);
-    req.session.errorMessage = 'Ошибка при принятии предложения';
+    req.session.errorMessage = 'Ошибка при одобрении предложения';
     res.redirect('/profile');
   }
 });
@@ -123,6 +148,25 @@ router.post('/admin/suggestion/:id/reject', async (req, res) => {
   } catch (err) {
     console.error('Error in /admin/suggestion/:id/reject:', err);
     req.session.errorMessage = 'Ошибка при отклонении предложения';
+    res.redirect('/profile');
+  }
+});
+
+router.post('/admin/suggestion/:id/delete', async (req, res) => {
+  if (!req.session.user || !req.session.user.is_admin) return res.redirect('/login');
+  const suggestionId = req.params.id;
+  try {
+    const [suggestion] = await pool.query('SELECT * FROM hobby_suggestions WHERE id = ?', [suggestionId]);
+    if (suggestion.length === 0) {
+      req.session.errorMessage = 'Предложение не найдено';
+      return res.redirect('/profile');
+    }
+    await pool.query('DELETE FROM hobby_suggestions WHERE id = ?', [suggestionId]);
+    req.session.successMessage = 'Предложение удалено';
+    res.redirect('/profile');
+  } catch (err) {
+    console.error('Error in /admin/suggestion/:id/delete:', err);
+    req.session.errorMessage = 'Ошибка при удалении предложения';
     res.redirect('/profile');
   }
 });
@@ -241,4 +285,5 @@ router.post('/favorites/add/:id', async (req, res) => {
     res.redirect('/profile');
   }
 });
+
 module.exports = router;

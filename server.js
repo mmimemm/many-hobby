@@ -15,6 +15,19 @@ const fileUpload = require('express-fileupload');
 dotenv.config();
 const app = express();
 
+// Проверка и создание директорий для загрузки файлов
+const uploadDirs = [
+  path.join(__dirname, 'src', 'public', 'uploads'),
+  path.join(__dirname, 'src', 'public', 'images', 'avatars'),
+  path.join(__dirname, 'src', 'public', 'images', 'hobbies')
+];
+uploadDirs.forEach(dir => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+    console.log(`Created directory: ${dir}`);
+  }
+});
+
 // Middleware для загрузки файлов
 app.use(fileUpload({
   limits: { fileSize: 2 * 1024 * 1024 }, // Ограничение 2MB
@@ -25,6 +38,8 @@ app.use(fileUpload({
 const hbs = exphbs.create({
   defaultLayout: 'main',
   extname: '.handlebars',
+  layoutsDir: path.join(__dirname, 'src/views/layouts'),
+  partialsDir: path.join(__dirname, 'src/views/partials'),
   helpers: {
     eq: (a, b) => a === b,
     truncate: (text, length) => {
@@ -48,33 +63,55 @@ const hbs = exphbs.create({
     gt: (a, b) => a > b,
     lt: (a, b) => a < b,
     subtract: (a, b) => a - b,
-    add: (a, b) => parseInt(a) + parseInt(b)
+    add: (a, b) => parseInt(a) + parseInt(b),
+    or: (a, b) => a || b,
+    not: (a) => !a,
+    ifCond: (v1, op, v2, options) => {
+      switch (op) {
+        case '==':
+          return v1 == v2 ? options.fn(this) : options.inverse(this);
+        case '===':
+          return v1 === v2 ? options.fn(this) : options.inverse(this);
+        default:
+          return options.inverse(this);
+      }
+    }
   }
 });
+
 app.engine('.handlebars', hbs.engine);
 app.set('view engine', '.handlebars');
-app.set('views', path.join(__dirname, 'src', 'views'));
+app.set('views', path.join(__dirname, 'src/views'));
+
 
 // Явная регистрация частичного шаблона
-try {
-  const suggestionsPartial = fs.readFileSync(path.join(__dirname, 'src', 'views', 'admin', 'suggestions.handlebars'), 'utf8');
-  hbs.handlebars.registerPartial('admin/suggestions', suggestionsPartial);
-  console.log('Partial admin/suggestions registered successfully');
-} catch (err) {
-  console.error('Error registering partial admin/suggestions:', err);
+const partialsDir = path.join(__dirname, 'src', 'views', 'admin');
+if (!fs.existsSync(partialsDir)) {
+  console.error('Partials directory does not exist:', partialsDir);
+} else {
+  try {
+    const suggestionsPartial = fs.readFileSync(path.join(partialsDir, 'suggestions.handlebars'), 'utf8');
+    hbs.handlebars.registerPartial('admin/suggestions', suggestionsPartial);
+    console.log('Partial admin/suggestions registered successfully');
+  } catch (err) {
+    console.error('Error registering partial admin/suggestions:', err);
+  }
 }
 
 console.log('Views directory:', path.join(__dirname, 'src', 'views'));
 
 // Настройка сессий
 const sessionStore = new MySQLStore({}, pool);
+sessionStore.on('error', (err) => {
+  console.error('Session store error:', err);
+});
 app.use(session({
   key: 'session_cookie_name',
   secret: process.env.SESSION_SECRET || 'my-secret',
   store: sessionStore,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 день
+  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 } // 7 дней
 }));
 
 // Middleware
@@ -95,7 +132,7 @@ app.use(async (req, res, next) => {
     next();
   } catch (err) {
     console.error('Error fetching categories:', err);
-    res.status(500).send('Ошибка сервера');
+    res.status(500).render('500', { message: 'Ошибка сервера', title: '500' });
   }
 });
 
@@ -116,11 +153,15 @@ app.get('/', async (req, res) => {
           })() : []
         )
       })),
-      title: 'Главная'
+      title: 'Главная',
+      successMessage: req.session.successMessage,
+      errorMessage: req.session.errorMessage
     });
+    delete req.session.successMessage;
+    delete req.session.errorMessage;
   } catch (err) {
     console.error('Error in /:', err);
-    res.status(500).send('Ошибка сервера');
+    res.status(500).render('500', { message: 'Ошибка сервера', title: '500' });
   }
 });
 
@@ -134,13 +175,13 @@ app.get('/contact', (req, res) => {
 
 app.post('/contact/suggest', async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
-  const { hobby_name, description } = req.body;
-  if (!hobby_name || !description) {
+  const { hobby_name, description, category_id } = req.body;
+  if (!hobby_name || !description || !category_id) {
     req.session.errorMessage = 'Заполните все поля';
     return res.redirect('/contact');
   }
   try {
-    await pool.query('INSERT INTO hobby_suggestions (hobby_name, description, user_id, status) VALUES (?, ?, ?, ?)', [hobby_name, description, req.session.user.id, 'pending']);
+    await pool.query('INSERT INTO hobby_suggestions (hobby_name, description, user_id, category_id, status) VALUES (?, ?, ?, ?, ?)', [hobby_name, description, req.session.user.id, category_id, 'pending']);
     req.session.successMessage = 'Предложение отправлено';
     res.redirect('/contact');
   } catch (err) {
@@ -165,7 +206,7 @@ app.get('/favorites', async (req, res) => {
             try {
               return JSON.parse(favorite.images);
             } catch (e) {
-              return favorite.images.startsWith('[') ? [] : [hobby.images];
+              return favorite.images.startsWith('[') ? [] : [favorite.images];
             }
           })() : []
         )
@@ -201,17 +242,6 @@ app.use('/', usersRoutes);
 // Обработка 404
 app.use((req, res) => {
   res.status(404).render('404', { message: 'Страница не найдена', title: '404' });
-});
-
-// Middleware для передачи и очистки сообщений
-app.use((req, res, next) => {
-  // Передаём сообщения в res.locals для отображения
-  res.locals.successMessage = req.session.successMessage;
-  res.locals.errorMessage = req.session.errorMessage;
-  // Очищаем сообщения после передачи
-  req.session.successMessage = null;
-  req.session.errorMessage = null;
-  next();
 });
 
 // Обработка ошибок

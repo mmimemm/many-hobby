@@ -1,27 +1,26 @@
-{{#if suggestions}}
-  <div class="mt-4">
-    <h4>Предложения пользователей</h4>
-    {{#each suggestions}}
-      <div class="card mb-3">
-        <div class="card-body">
-          <p><strong>Хобби:</strong> {{hobby_name}}</p>
-          <p>{{description}}</p>
-          <small class="text-muted">{{formatDate created_at}}</small>
-          {{#if status}}
-            <span class="badge bg-secondary">{{status}}</span>
-          {{/if}}
-          {{#if ../user.is_admin}}
-            <form action="/admin/suggestion/{{id}}/accept" method="POST" style="display: inline;">
-              <button type="submit" class="btn btn-success btn-sm mt-2">Принять</button>
-            </form>
-            <form action="/admin/suggestion/{{id}}/reject" method="POST" style="display: inline;">
-              <button type="submit" class="btn btn-danger btn-sm mt-2">Отклонить</button>
-            </form>
-          {{/if}}
-        </div>
+<!-- Отладка: Начало suggestions.handlebars, suggestions count: {{suggestions.length}} -->
+<div class="mt-4">
+  <h4>Предложения пользователей</h4>
+  {{#each suggestions}}
+    <div class="card mb-3">
+      <div class="card-body">
+        <!-- Отладка: ID {{id}}, hobby_name {{hobby_name}}, category_name {{category_name}}, status {{status}}, status_hex {{status_hex}}, is_admin {{../user.is_admin}}, user_email {{../user.email}} -->
+        <p><strong>Хобби </strong> {{hobby_name}}</p>
+        <p><strong>Категория :</strong> {{category_name}}</p>
+        <p><strong>Описание:</strong> {{description}}</p>
+        <p><strong>Статус:</strong> {{status}}</p>
+        <p><strong>Создано:</strong> {{formatDate created_at}}</p>
+        <!-- Кнопки для ID {{id}} -->
+        <form action="/admin/suggestion/{{id}}/accept" method="POST" style="display: inline;">
+          <button type="submit" class="btn btn-success btn-sm mt-2">Одобрить</button>
+        </form>
+        <form action="/admin/suggestion/{{id}}/delete" method="POST" style="display: inline;">
+          <button type="submit" class="btn btn-danger btn-sm mt-2">Удалить</button>
+        </form>
       </div>
-    {{/each}}
-  </div>
-{{else}}
-  <p class="mt-4">Предложений пока нет.</p>
-{{/if}}
+    </div>
+  {{else}}
+    <p class="mt-4">Предложений пока нет.</p>
+  {{/each}}
+</div>
+<!-- Отладка: Конец suggestions.handlebars -->

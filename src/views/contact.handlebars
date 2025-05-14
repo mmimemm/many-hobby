@@ -20,6 +20,16 @@
         <div class="invalid-feedback">Введите название хобби.</div>
       </div>
       <div class="mb-3">
+        <label for="category_id" class="form-label">Категория</label>
+        <select id="category_id" name="category_id" class="form-control" required>
+          <option value="">Выберите категорию</option>
+          {{#each categories}}
+            <option value="{{id}}">{{name}}</option>
+          {{/each}}
+        </select>
+        <div class="invalid-feedback">Выберите категорию.</div>
+      </div>
+      <div class="mb-3">
         <label for="description" class="form-label">Описание</label>
         <textarea id="description" name="description" class="form-control" rows="4" required></textarea>
         <div class="invalid-feedback">Введите описание.</div>
